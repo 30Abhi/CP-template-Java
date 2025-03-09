@@ -195,7 +195,7 @@ public class template_old {
         if(depthofnode[u]<depthofnode[v]){
             int temp=u;
             u=v;
-            v=u;
+            v=temp;
         }
 
         if(depthofnode[u]>depthofnode[v]){
