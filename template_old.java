@@ -108,7 +108,7 @@ public class template_old {
         }
     }
 
-    public static  long MOD= (long)998244353;
+    public static  long MOD= (long)(1e9+7);
     
     public static  long  gcd(long a, long b) {if (b > a) {return gcd(b, a);} if (b == 0) {return a;} return gcd(b, a % b);}
     public static  long expo(long a, long b, long mod) {long res = 1; while (b > 0) {if ((b & 1)==1) res = (res * a) % mod; a = (a * a) % mod; b = b >> 1;} return res;}
