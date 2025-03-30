@@ -118,14 +118,26 @@ public class template_old {
     public static long mod_sub(long a, long b, long m) {a = a % m; b = b % m; return (((a - b) % m) + m) % m;}
     public static long mod_div(long a, long b, long m) {a = a % m; b = b % m; return (mod_mul(a, mminvprime(b, m), m) + m) % m;}  //only for prime m
     static class Pair {
-        long x;
-        long y;
-        Pair(long x,long y){
-            this.x=x;
-            this.y=y;
+        long x, y;
+        Pair(long x, long y) {
+            this.x = x;
+            this.y = y;
         }
-        
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof Pair)) return false;
+            Pair pair = (Pair) o;
+            return x == pair.x && y == pair.y;
+        }
+
+        @Override
+        public int hashCode() {
+            return (int)(31 * x + y);
+        }
     }
+    
     public static void sort(Pair[] arr) {
         Comparator<Pair> comparator = new Comparator<>() {
             @Override
@@ -162,6 +174,21 @@ public class template_old {
     public static int[]depthofnode;
     public static ArrayList<ArrayList<Integer>>tree;
 
+    public static void createparenttable(int n,int Log){
+        kthparent=new int[n+1][Log];
+        depthofnode=new int[n+1];
+
+        dfs(1,0,kthparent);;
+
+        for(int i=1;i<Log;i++){
+            for(int node=1;node<=n;node++){
+                int mid=kthparent[node][i-1];
+                kthparent[node][i]=kthparent[mid][i-1];
+            }
+        }
+
+    }
+
     public static void dfs(int node,int parent, int[][]kthparent){
         kthparent[node][0]=parent;//2^0==1 st parent
         depthofnode[node]=depthofnode[parent]+1;
@@ -195,7 +222,7 @@ public class template_old {
         if(depthofnode[u]<depthofnode[v]){
             int temp=u;
             u=v;
-            v=u;
+            v=temp;
         }
 
         if(depthofnode[u]>depthofnode[v]){
@@ -217,15 +244,56 @@ public class template_old {
 
     }
 
-    public static void binaryLifting(int n,int Log){
-        //1 based indexing
-        kthparent=new int[n+1][Log];
-        depthofnode=new int[n+1];
-        dfs(1,0,kthparent);
+    public static class DisjointSet{
+        int[]parent;
+        int[]rank;
+        DisjointSet(int n){
+            
+            parent=new int[n+1];
+            rank=new int[n+1];
+            for(int i=0;i<=n;i++){
+                parent[i]=i;
+                rank[i]=1;
+            }
+            
+        }
 
-        
+        int findpar(int v){
+            if(parent[v]==v){
+                return v;
+            }
 
-        
+            return parent[v]=findpar(parent[v]); // Path compression
+        }
+
+        boolean isSameSet(int i,int j){
+            return findpar(i)==findpar(j);
+        }
+
+        void union(int i,int j){
+
+            int a=findpar(i);// root of i
+            int b=findpar(j);// root of j
+
+            if(a!=b){
+                if(rank[a]<rank[b]){
+                    parent[a]=b;
+    
+                }
+                else if(rank[a]>rank[b]) {
+                    parent[b]=a;
+                }
+    
+                else{
+                    parent[b]=a;
+                    rank[a]++;
+                }
+            }
+            
+
+        }
+
+
     }
     
 }
