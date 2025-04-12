@@ -295,5 +295,8 @@ public class template_old {
 
 
     }
+
+    public static int[]knightX={ -2, -2, -1, -1, 1, 1, 2, 2 };
+    public static int[]knightY= { -1, 1, -2, 2, -2, 2, -1, 1 };
     
 }
