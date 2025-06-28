@@ -331,12 +331,11 @@ public class template_old {
         ArrayList<Integer>toposort=new ArrayList<>();
     
         for(int i=indexing;i<=n;i++){
-            if(vis[i]==1){
-                continue;
-            }
-            boolean check=toposort(i,adj,toposort,vis);
-            if(!check){
-                return new ArrayList<>();
+            if(vis[i]==0){
+                boolean check=toposort(i,adj,toposort,vis);
+                if(!check){
+                    return new ArrayList<>();
+                }
             }
         }
  
