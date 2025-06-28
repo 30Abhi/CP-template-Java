@@ -298,5 +298,34 @@ public class template_old {
 
     public static int[]knightX={ -2, -2, -1, -1, 1, 1, 2, 2 };
     public static int[]knightY= { -1, 1, -2, 2, -2, 2, -1, 1 };
+
+    public static void toposort(int node,ArrayList<ArrayList<Integer>>adj,ArrayList<Integer>toposort,int[]vis){
+        vis[node]=1;
+        for(int child:adj.get(node)){
+            if(vis[child]==0){
+                toposort(child,adj,toposort,vis);
+            }
+        }
+ 
+        toposort.add(node);
+ 
+    }
+ 
+    public static ArrayList<Integer> returntoposort(int indexing,int n,ArrayList<ArrayList<Integer>>adj){
+ 
+        int[]vis=new int[n+1];
+ 
+        ArrayList<Integer>toposort=new ArrayList<>();
+        
+        for(int i=indexing;i<=n;i++){
+            if(vis[i]==1){
+                continue;
+            }
+            toposort(i,adj,toposort,vis);
+        }
+ 
+        return toposort;
+ 
+    }
     
 }
