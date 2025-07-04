@@ -100,11 +100,15 @@ public class template_old {
         }
 
         public long[] get(int l, int r) {
+
             l++;
             r++;
+
             long h1 = (hash1[r] - (hash1[l - 1] * power1[r - l + 1]) % MOD + MOD) % MOD;
             long h2 = (hash2[r] - (hash2[l - 1] * power2[r - l + 1]) % MOD + MOD) % MOD;
+            
             return new long[]{h1, h2};
+
         }
     }
 
@@ -246,14 +250,14 @@ public class template_old {
 
     public static class DisjointSet{
         int[]parent;
-        int[]rank;
+        int[]size;
         DisjointSet(int n){
             
             parent=new int[n+1];
-            rank=new int[n+1];
+            size=new int[n+1];
             for(int i=0;i<=n;i++){
                 parent[i]=i;
-                rank[i]=1;
+                size[i]=1;
             }
             
         }
@@ -276,17 +280,16 @@ public class template_old {
             int b=findpar(j);// root of j
 
             if(a!=b){
-                if(rank[a]<rank[b]){
+                if(size[a]<size[b]){
                     parent[a]=b;
+                    size[b]+=size[a];
     
                 }
-                else if(rank[a]>rank[b]) {
-                    parent[b]=a;
-                }
+              
     
                 else{
                     parent[b]=a;
-                    rank[a]++;
+                    size[a]+=size[b];
                 }
             }
             
@@ -296,6 +299,7 @@ public class template_old {
 
     }
 
+    
     public static int[]knightX={ -2, -2, -1, -1, 1, 1, 2, 2 };
     public static int[]knightY= { -1, 1, -2, 2, -2, 2, -1, 1 };
 
