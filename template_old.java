@@ -346,5 +346,60 @@ public class template_old {
         return toposort;
  
     }
+
+    public static int[]sgt=new int[4*100000]; // segment tree 
+
+    public static void build(int st,int end,int idx,int[]arr){
+        if(st==end){
+            sgt[idx]=arr[st];
+            return ;
+        }
+        int mid=(st+end)/2;
+        //left 
+        build(st,mid,2*idx,arr);
+        //right
+        build(mid+1,end,2*idx+1,arr);
+
+        // vlaue of currnode
+        sgt[idx]=sgt[2*idx]+sgt[2*idx+1];
+
+    }
+
+    public static void update(int st,int end,int idx,int update_idx,int update_val){
+
+        if(st==end && st==update_idx){
+            sgt[idx]=update_val;
+            return ;
+        }
+        int mid=(st+end)/2;
+        // left call to update
+        update(st,mid,2*idx,update_idx,update_val);
+        //right call to update
+        update(mid+1,end,2*idx+1,update_idx,update_val);
+
+        sgt[idx]=sgt[2*idx]+sgt[2*idx+1];
+
+    }
+
+    public static int query(int st,int end,int idx,int query_st,int query_end){
+        // no overlap
+        if(query_st>end || query_end<st){
+            return 0;
+        }
+
+        // fully overlap
+        if(st>=query_st && end<=query_end){
+            return sgt[idx]; 
+        }
+
+        // partially overlap
+        int mid=(st+end)/2;
+        int left_cont=query(st, mid, 2*idx, query_st, query_end);
+        int right_cont=query(mid+1, end, 2*idx, query_st, query_end);
+
+        return left_cont+right_cont;
+
+    }
+    
     
 }
