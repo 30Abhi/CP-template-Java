@@ -347,59 +347,107 @@ public class template_old {
  
     }
 
-    public static int[]sgt=new int[4*100000]; // segment tree 
-
-    public static void build(int st,int end,int idx,int[]arr){
-        if(st==end){
-            sgt[idx]=arr[st];
-            return ;
+   
+    class Node1{
+        long val;
+        Node1(){
+            this.val=0; // default 
         }
-        int mid=(st+end)/2;
-        //left 
-        build(st,mid,2*idx,arr);
-        //right
-        build(mid+1,end,2*idx+1,arr);
-
-        // vlaue of currnode
-        sgt[idx]=sgt[2*idx]+sgt[2*idx+1];
-
+        Node1(long val){
+            this.val=val; // actual 
+        }
+        void merge(Node1 a,Node1 b){
+            this.val=a.val+b.val;
+        }
     }
 
-    public static void update(int st,int end,int idx,int update_idx,int update_val){
-
-        if(st==end && st==update_idx){
-            sgt[idx]=update_val;
-            return ;
+    class Update1{
+        long val; // may change
+        Update1(long p1) { // Actual Update
+            val = p1; // may change
         }
-        int mid=(st+end)/2;
-        // left call to update
-        update(st,mid,2*idx,update_idx,update_val);
-        //right call to update
-        update(mid+1,end,2*idx+1,update_idx,update_val);
-
-        sgt[idx]=sgt[2*idx]+sgt[2*idx+1];
-
+        void apply(Node1 a) { // apply update to given node
+            a.val = val; // may change
+        }
     }
 
-    public static int query(int st,int end,int idx,int query_st,int query_end){
-        // no overlap
-        if(query_st>end || query_end<st){
-            return 0;
+
+    class SGT{
+        Node1[]sgt;
+
+        int s; // len of sgt 
+        long[]arr; // actaul input array
+        int n; // length of input array 
+
+        SGT(int a_len,long[]a){
+            arr=a;
+            while (s<2*a_len) {
+                s= s << 1;
+            }
+            sgt=new Node1[s];
+            n=s;
+            Arrays.fill(sgt, new Node1() ); // initialize with default value 
+            build(0,n-1,1);
         }
 
-        // fully overlap
-        if(st>=query_st && end<=query_end){
-            return sgt[idx]; 
+        void build(int st,int end,int idx){
+            if(st==end){
+                sgt[idx]=new Node1(arr[st]);
+                return ;
+            }
+            int mid=(st+end)/2;
+            // left build
+            build(st,mid,2*idx);
+            // right build
+            build(mid+1,end,2*idx+1);
         }
 
-        // partially overlap
-        int mid=(st+end)/2;
-        int left_cont=query(st, mid, 2*idx, query_st, query_end);
-        int right_cont=query(mid+1, end, 2*idx, query_st, query_end);
+        void update(int qindex,Update1 u){
+            makeupdate(0,n-1,1,qindex,u);
+        }
 
-        return left_cont+right_cont;
+        void makeupdate(int st,int end,int idx,int qindex,Update1 u){
+            if(st==end ){
+                u.apply(sgt[idx]); // update the leaf node
+                return ;
+            }
+            int mid=(st+end)/2;
+
+            if(qindex<=mid){
+                makeupdate(st, mid, 2*idx, qindex, u);
+            }
+            else{
+                makeupdate(mid+1, end, 2*idx +1 , qindex, u);
+            }
+
+            sgt[idx].merge(sgt[2*idx],sgt[2*idx +1]); // merge the ans to curr node with left and right subtree
+
+        }
+
+        Node1 query(int qs,int qe){
+            return makeQuery(0,n-1,1,qs,qe);
+        }
+
+        Node1 makeQuery(int st,int end,int idx,int qs,int qe){
+            // no overlap 
+            if(qe<st || qs>end){
+                return new Node1();
+            }
+            // curr node full overlap 
+            if(st>=qs && end<=qe){
+                return sgt[idx];
+            }
+            // partial overlap 
+            int mid=(st+end)/2;
+                // left subtree 
+            Node1 left=makeQuery(st, mid, 2*idx, qs, qe);    
+                // right subtree
+            Node1 right=makeQuery(mid+1, end, 2*idx+1, qs, qe);
+
+            Node1 ans=new Node1();
+            ans.merge(left, right);
+            return ans;
+        }
 
     }
-    
-    
 }
