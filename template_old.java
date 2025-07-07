@@ -347,7 +347,8 @@ public class template_old {
  
     }
 
-   
+   // range XOR
+   // update a[i]-> a[i]^x+y
     class Node1{
         long val;
         Node1(){
@@ -357,17 +358,19 @@ public class template_old {
             this.val=val; // actual 
         }
         void merge(Node1 a,Node1 b){
-            this.val=a.val+b.val;
+            this.val=a.val^b.val;
         }
     }
 
     class Update1{
-        long val; // may change
-        Update1(long p1) { // Actual Update
-            val = p1; // may change
+        long x; // may change
+        long y;
+        Update1(long x,long y) { // Actual Update
+            this.x = x; // may change
+            this.y = y; // may change
         }
         void apply(Node1 a) { // apply update to given node
-            a.val = val; // may change
+            a.val = a.val^x +y ; // may change
         }
     }
 
@@ -402,11 +405,12 @@ public class template_old {
             build(mid+1,end,2*idx+1);
         }
 
-        void update(int qindex,Update1 u){
-            makeupdate(0,n-1,1,qindex,u);
+        void makeupdate(int qindex,int x,int y){
+            Update1 u=new Update1(x, y);
+            update(0,n-1,1,qindex,u);
         }
 
-        void makeupdate(int st,int end,int idx,int qindex,Update1 u){
+        void update(int st,int end,int idx,int qindex,Update1 u){
             if(st==end ){
                 u.apply(sgt[idx]); // update the leaf node
                 return ;
@@ -414,21 +418,21 @@ public class template_old {
             int mid=(st+end)/2;
 
             if(qindex<=mid){
-                makeupdate(st, mid, 2*idx, qindex, u);
+                update(st, mid, 2*idx, qindex, u);
             }
             else{
-                makeupdate(mid+1, end, 2*idx +1 , qindex, u);
+                update(mid+1, end, 2*idx +1 , qindex, u);
             }
 
             sgt[idx].merge(sgt[2*idx],sgt[2*idx +1]); // merge the ans to curr node with left and right subtree
 
         }
 
-        Node1 query(int qs,int qe){
-            return makeQuery(0,n-1,1,qs,qe);
+        Node1 makeQuery(int qs,int qe){
+            return query(0,n-1,1,qs,qe);
         }
 
-        Node1 makeQuery(int st,int end,int idx,int qs,int qe){
+        Node1 query(int st,int end,int idx,int qs,int qe){
             // no overlap 
             if(qe<st || qs>end){
                 return new Node1();
@@ -440,9 +444,9 @@ public class template_old {
             // partial overlap 
             int mid=(st+end)/2;
                 // left subtree 
-            Node1 left=makeQuery(st, mid, 2*idx, qs, qe);    
+            Node1 left=query(st, mid, 2*idx, qs, qe);    
                 // right subtree
-            Node1 right=makeQuery(mid+1, end, 2*idx+1, qs, qe);
+            Node1 right=query(mid+1, end, 2*idx+1, qs, qe);
 
             Node1 ans=new Node1();
             ans.merge(left, right);
