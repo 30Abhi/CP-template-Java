@@ -347,38 +347,60 @@ public class template_old {
  
     }
 
-   // range XOR
-   // update a[i]-> a[i]^x+y
-    class Node1{
-        long val;
+  
+
+
+     static class Node1{
+        long cinv;
+        int[]freq;
         Node1(){
-            this.val=0; // default 
+            this.cinv=0;
+            this.freq=new int[41];
         }
         Node1(long val){
-            this.val=val; // actual 
+            this.cinv=0;
+            this.freq=new int[41];
+            this.freq[(int)val]=1;
         }
         void merge(Node1 a,Node1 b){
-            this.val=a.val^b.val;
+
+            // start with the inversions already within each child
+            this.cinv = a.cinv + b.cinv;
+
+            // count every pair (i in a, j in b) where i>j
+            for (int i = 1; i <= 40; i++) {
+                if (a.freq[i] == 0) continue;
+                for (int j = 1; j < i; j++) {
+                    if (b.freq[j] == 0) continue;
+                    this.cinv += (long)a.freq[i] * b.freq[j];
+                }
+            }
+
+            // rebuild this.freq = a.freq + b.freq
+            for (int i = 1; i <= 40; i++) {
+                this.freq[i] = a.freq[i] + b.freq[i];
+            }
         }
     }
 
-    class Update1{
-        long x; // may change
-        long y;
-        Update1(long x,long y) { // Actual Update
+    static class Update1{
+        int x; // may change
+        
+        Update1(int x) { // Actual Update
             this.x = x; // may change
-            this.y = y; // may change
         }
-        void apply(Node1 a) { // apply update to given node
-            a.val = a.val^x +y ; // may change
+        void apply(Node1 a) { 
+            a.cinv=0;
+            a.freq=new int[41];
+            a.freq[x]=1;
         }
     }
 
 
-    class SGT{
+    static class SGT{
         Node1[]sgt;
 
-        int s; // len of sgt 
+        int s=1; // len of sgt 
         long[]arr; // actaul input array
         int n; // length of input array 
 
@@ -388,13 +410,13 @@ public class template_old {
                 s= s << 1;
             }
             sgt=new Node1[s];
-            n=s;
-            Arrays.fill(sgt, new Node1() ); // initialize with default value 
+            n=a_len;
+            for (int i = 0; i < sgt.length; i++) sgt[i] = new Node1();
             build(0,n-1,1);
         }
 
         void build(int st,int end,int idx){
-            if(st==end){
+            if(st==end){ // leaf node 
                 sgt[idx]=new Node1(arr[st]);
                 return ;
             }
@@ -403,10 +425,13 @@ public class template_old {
             build(st,mid,2*idx);
             // right build
             build(mid+1,end,2*idx+1);
+
+            // merge
+            sgt[idx].merge(sgt[2*idx], sgt[2*idx+1]);
         }
 
-        void makeupdate(int qindex,int x,int y){
-            Update1 u=new Update1(x, y);
+        void makeupdate(int qindex,int x){
+            Update1 u=new Update1(x);
             update(0,n-1,1,qindex,u);
         }
 
@@ -417,7 +442,7 @@ public class template_old {
             }
             int mid=(st+end)/2;
 
-            if(qindex<=mid){
+            if(mid>=qindex){
                 update(st, mid, 2*idx, qindex, u);
             }
             else{
@@ -438,7 +463,7 @@ public class template_old {
                 return new Node1();
             }
             // curr node full overlap 
-            if(st>=qs && end<=qe){
+            if(qs<=st && qe>=end){
                 return sgt[idx];
             }
             // partial overlap 
@@ -455,3 +480,4 @@ public class template_old {
 
     }
 }
+
