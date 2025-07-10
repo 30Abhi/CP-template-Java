@@ -8,9 +8,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.StringTokenizer;
 
-public class template_old {
-
-       static class FastReader {
+public class lazyPropogation {
+    static class FastReader {
         BufferedReader br;
         StringTokenizer st;
     
@@ -365,9 +364,9 @@ public class template_old {
     }
 
     static class Update1{
-        int x; // may change
+        long x; // may change
         
-        Update1(int x) { // Actual Update
+        Update1(long x) { // Actual Update
             this.x = x; // may change
         }
         void apply(Node1 a) { 
@@ -380,11 +379,13 @@ public class template_old {
         Node1[]sgt;
         long[]arr; // actaul input array
         int n; // length of input array 
+        long[]lazy;
 
         SGT(int a_len,long[]a){
             arr=a;
             n=a_len;
             sgt=new Node1[4*n]; // segrmnt tree initialization
+            lazy=new long[4*n]; // for traack of change to be done in node and its subtree 
             for (int i = 0; i < sgt.length; i++) sgt[i] = new Node1();
             build(0,n-1,1);
         }
@@ -405,26 +406,28 @@ public class template_old {
             sgt[idx].merge(sgt[2*idx], sgt[2*idx+1]);
         }
 
-        void makeupdate(int qindex,int x){
+        void makeupdate(int qst,int qend,int x){
             Update1 u=new Update1(x);
-            update(0,n-1,1,qindex,u);
+            update(0,n-1,1,qst,qend,u);
         }
 
-        void update(int st,int end,int idx,int qindex,Update1 u){
+        void update(int st,int end,int idx,int qst,int qend,Update1 u){
+            push(st, end, idx);
 
-            if(st==end ){
-                u.apply(sgt[idx]); // update the leaf node
+            // full overlap
+            if(st>=qst && end<=qend){
+                lazy[idx]=u.x; // this node and subtree should be updated 
+                push(st, end, idx);
+                return;
+            }
+            // no overlap
+             if(qend<st || qst>end){
                 return ;
             }
+
             int mid=(st+end)/2;
-
-            if(mid>=qindex){
-                update(st, mid, 2*idx, qindex, u);
-            }
-            else{
-                update(mid+1, end, 2*idx +1 , qindex, u);
-            }
-
+            update(st, mid, 2*idx, qst, qend, u);
+            update(mid+1, end, 2*idx+1, qst, qend, u);
             sgt[idx].merge(sgt[2*idx],sgt[2*idx +1]); // merge the ans to curr node with left and right subtree
 
         }
@@ -434,6 +437,7 @@ public class template_old {
         }
 
         Node1 query(int st,int end,int idx,int qs,int qe){
+            push(st,end,idx);
             // no overlap 
             if(qe<st || qs>end){
                 return new Node1();
@@ -454,8 +458,20 @@ public class template_old {
             return ans;
         }
 
-        
+        // lazy propogation -> updating curr node and pushing update 1 level down 
+        void push(int st,int end,int idx){
+            if(lazy[idx]!=0){
+                sgt[idx].val+=(end-st+1)*lazy[idx];
+                // push to below level
+                if(st!=end){
+                        
+                    lazy[2*idx]+=lazy[idx];
+                    lazy[2*idx+1]+=lazy[idx];
+                }
+                // change done can remove the change
+                lazy[idx]=0;
+            }
+        }
 
     }
 }
-
