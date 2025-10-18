@@ -1,21 +1,13 @@
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.StringTokenizer;
-
-public class template_old {
-
-       static class FastReader {
+static class FastReader {
         BufferedReader br;
         StringTokenizer st;
     
         public FastReader() {
-            br = new BufferedReader(new InputStreamReader(System.in));
+            try {
+                br = new BufferedReader(new FileReader("input.txt"));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
         }
     
         String next() {
@@ -53,23 +45,34 @@ public class template_old {
     }
     
     static class FastWriter {
-        private final BufferedWriter bw;
+        private BufferedWriter bw;
     
         public FastWriter() {
-            this.bw = new BufferedWriter(new OutputStreamWriter(System.out));
+            try {
+                this.bw = new BufferedWriter(new FileWriter("output.txt"));
+            } catch (IOException e) {
+                e.printStackTrace();
+                this.bw = null;
+            }
         }
     
         public void print(Object object) throws IOException {
-            bw.append("" + object);
+            if (bw != null) {
+                bw.append("" + object);
+            }
         }
     
         public void println(Object object) throws IOException {
             print(object);
-            bw.append("\n");
+            if (bw != null) {
+                bw.append("\n");
+            }
         }
     
         public void close() throws IOException {
-            bw.close();
+            if (bw != null) {
+                bw.close();
+            }
         }
     }
 
@@ -447,5 +450,3 @@ public class template_old {
         
 
     }
-}
-
