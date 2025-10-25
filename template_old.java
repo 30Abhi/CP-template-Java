@@ -447,5 +447,21 @@ public class template_old {
         
 
     }
+
+    public static long ncr(long n,long r){ // if r is small 
+        if (r > n) return 0;
+
+        r = Math.min(r, n - r);
+
+        long ans = 1;
+
+        for (long i = 0; i < r; i++) {
+
+        ans = (ans * mod_div(n - i, i + 1,MOD)) % MOD;
+
+        }
+
+        return ans;
+    }
 }
 
