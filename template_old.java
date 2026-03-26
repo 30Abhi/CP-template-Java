@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.StringTokenizer;
 
@@ -336,6 +337,7 @@ public class template_old {
             }
         }
  
+        Collections.reverse(toposort);
         return toposort;
  
     }
