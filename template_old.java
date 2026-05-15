@@ -155,7 +155,7 @@ public class template_old {
                                 // - p2.y to p1.x-p2.x.
             }
         };
-        Arrays.sort(arr, comparator);
+        java.util.Arrays.sort(arr, comparator);
     }
     public static long fact[];
     public static long invfact[];
